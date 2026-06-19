@@ -1,4 +1,5 @@
 import './style.css';
+import { FORM_CONFIG } from './config.js';
 
 (function () {
   'use strict';
@@ -83,6 +84,8 @@ import './style.css';
     (function (form) {
       var successMsg = form.querySelector('.form-success');
       var requiredInputs = form.querySelectorAll('[required]');
+      var submitBtn = form.querySelector('.form-submit');
+      var originalBtnText = submitBtn ? submitBtn.textContent : '';
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -98,16 +101,68 @@ import './style.css';
           }
         }
 
-        if (successMsg) {
-          if (valid) {
-            successMsg.textContent = 'Thanks! Your request has been received. We\'ll contact you soon.';
-            successMsg.className = 'form-success';
-            form.reset();
-          } else {
+        if (!valid) {
+          if (successMsg) {
             successMsg.textContent = 'Please fill in all required fields.';
             successMsg.className = 'form-success error';
           }
+          return;
         }
+
+        if (successMsg) {
+          successMsg.textContent = '';
+          successMsg.className = 'form-success';
+        }
+
+        if (FORM_CONFIG.mode === 'demo') {
+          if (successMsg) {
+            successMsg.textContent = 'Thanks! Your request has been received. We\'ll contact you soon.';
+            successMsg.className = 'form-success';
+          }
+          form.reset();
+          return;
+        }
+
+        /* Live mode — send to external endpoint */
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending...';
+        }
+
+        var formData = new FormData(form);
+        var payload = {};
+        formData.forEach(function (value, key) {
+          payload[key] = value;
+        });
+
+        fetch(FORM_CONFIG.endpoint, {
+          method: 'POST',
+          headers: FORM_CONFIG.headers,
+          body: JSON.stringify(payload),
+        })
+          .then(function (response) {
+            if (!response.ok) throw new Error('Server error');
+            return response.json();
+          })
+          .then(function () {
+            if (successMsg) {
+              successMsg.textContent = 'Thanks! Your request has been sent. We\'ll contact you soon.';
+              successMsg.className = 'form-success';
+            }
+            form.reset();
+          })
+          .catch(function () {
+            if (successMsg) {
+              successMsg.textContent = 'Something went wrong. Please try again or call us directly.';
+              successMsg.className = 'form-success error';
+            }
+          })
+          .finally(function () {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = originalBtnText;
+            }
+          });
       });
 
       for (var r = 0; r < requiredInputs.length; r++) {
