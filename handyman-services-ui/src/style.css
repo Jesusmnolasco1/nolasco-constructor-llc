@@ -36,6 +36,7 @@ body {
   line-height: 1.6;
   font-size: 1rem;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 img {
@@ -69,7 +70,7 @@ ul {
 }
 
 .section {
-  padding: 4rem 0;
+  padding: 3rem 0;
 }
 
 .section.surface {
@@ -78,7 +79,7 @@ ul {
 
 .section-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 
 .section-header h2 {
@@ -114,6 +115,7 @@ ul {
   cursor: pointer;
   transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
   text-align: center;
+  min-height: 48px;
 }
 
 .button:active {
@@ -153,7 +155,8 @@ ul {
 }
 
 .card:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
 }
 
 .card h3 {
@@ -242,6 +245,7 @@ ul {
 
 .nav.open {
   display: flex;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
 .nav-link {
@@ -251,6 +255,7 @@ ul {
   font-weight: 500;
   font-size: 0.9375rem;
   border-bottom: 1px solid transparent;
+  transition: color 0.2s;
 }
 
 .nav-link:hover {
@@ -260,6 +265,10 @@ ul {
 .nav-link.active {
   color: var(--color-text);
   font-weight: 600;
+}
+
+.nav-link.active:hover {
+  color: var(--color-text);
 }
 
 .header-cta {
@@ -287,7 +296,7 @@ ul {
 
 /* Page hero (inner pages) */
 .page-hero {
-  padding: 3rem 0;
+  padding: 2.5rem 0;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
 }
@@ -308,12 +317,12 @@ ul {
 
 /* Home hero */
 .hero {
-  padding: 3rem 0;
+  padding: 2.5rem 0;
 }
 
 .hero .container {
   display: grid;
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
 .hero-content {
@@ -957,8 +966,8 @@ ul {
 
 .form-input {
   width: 100%;
-  padding: 0.6875rem 0.875rem;
-  font-size: 0.9375rem;
+  padding: 0.75rem 0.875rem;
+  font-size: 1rem;
   font-family: inherit;
   color: var(--color-text);
   background: var(--color-bg);
@@ -1068,7 +1077,7 @@ select.form-input {
 .footer {
   background: #0f172a;
   color: #9ca3af;
-  padding: 3rem 0 1.5rem;
+  padding: 2.5rem 0 1.25rem;
 }
 
 .footer-grid {

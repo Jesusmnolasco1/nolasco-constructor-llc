@@ -26,6 +26,12 @@ import './style.css';
     menuBtn.addEventListener('click', toggleMenu);
   }
 
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      closeMenu();
+    }
+  });
+
   for (var i = 0; i < navLinks.length; i++) {
     navLinks[i].addEventListener('click', closeMenu);
   }
@@ -77,6 +83,9 @@ import './style.css';
         requiredInputs[r].addEventListener('input', function () {
           if (this.value.trim()) {
             this.classList.remove('input-error');
+          }
+          if (successMsg && successMsg.textContent) {
+            successMsg.textContent = '';
           }
         });
       }
