@@ -7,7 +7,10 @@ import './style.css';
   var nav = document.getElementById('main-nav');
   var navLinks = nav ? nav.querySelectorAll('a') : [];
   var yearSpan = document.getElementById('year');
+  var form = document.getElementById('estimate-form');
+  var successMsg = document.getElementById('form-success');
 
+  /* Mobile menu toggle */
   function toggleMenu() {
     if (!menuBtn || !nav) return;
     var expanded = menuBtn.getAttribute('aria-expanded') === 'true' ? false : true;
@@ -29,7 +32,17 @@ import './style.css';
     navLinks[i].addEventListener('click', closeMenu);
   }
 
+  /* Dynamic copyright year */
   if (yearSpan) {
     yearSpan.textContent = new Date().getFullYear();
+  }
+
+  /* Contact form */
+  if (form && successMsg) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      successMsg.textContent = 'Thanks! Your request has been received. We\'ll contact you soon.';
+      form.reset();
+    });
   }
 })();
