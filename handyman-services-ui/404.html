@@ -24,23 +24,26 @@
     <div id="app">
       <header class="header" role="banner">
         <div class="container">
-          <a href="./" class="logo">Nolasco Constructor LLC</a>
+          <a href="index.html" class="logo">Nolasco Constructor LLC</a>
+          <nav id="main-nav" class="nav" role="navigation" aria-label="Main navigation">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="services.html" class="nav-link">Services</a>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="work.html" class="nav-link">Work</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+          </nav>
+          <a href="tel:+19292476158" class="button button-primary header-cta" aria-label="Call Nolasco Constructor LLC">Call Now</a>
           <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" type="button">
             <svg class="theme-icon-light" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
             <svg class="theme-icon-dark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
           </button>
-          <button id="menu-btn" class="menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
-            <span></span><span></span><span></span>
+          <button id="menu-btn" class="menu-btn" aria-expanded="false" aria-label="Toggle navigation menu" type="button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="4" y1="12" x2="20" y2="12"/>
+              <line x1="4" y1="18" x2="20" y2="18"/>
+            </svg>
           </button>
-          <nav id="main-nav" class="nav" role="navigation" aria-label="Main">
-            <ul>
-              <li><a href="./">Home</a></li>
-              <li><a href="services.html">Services</a></li>
-              <li><a href="about.html">About</a></li>
-              <li><a href="work.html">Work</a></li>
-              <li><a href="contact.html" class="btn-nav">Get a Quote</a></li>
-            </ul>
-          </nav>
         </div>
       </header>
 
@@ -56,14 +59,51 @@
           <div class="container text-center" style="text-align:center;padding:4rem 1rem">
             <p style="font-size:6rem;font-weight:700;color:#f59e0b;line-height:1;margin:0 0 1rem">404</p>
             <p style="font-size:1.25rem;color:#64748b;max-width:480px;margin:0 auto 2rem">Looks like something went wrong. Let's get you back on track.</p>
-            <a href="./" class="btn btn-primary">Return Home</a>
+            <a href="index.html" class="btn btn-primary">Return Home</a>
           </div>
         </section>
       </main>
 
       <footer class="footer" role="contentinfo">
         <div class="container">
-          <p>&copy; <span id="year"></span> Nolasco Constructor LLC. All rights reserved.</p>
+          <div class="footer-grid">
+            <div>
+              <h4>Nolasco Constructor LLC</h4>
+              <p>Quality repairs, installations, and maintenance for your home or business. Reliable local service you can trust.</p>
+            </div>
+            <div>
+              <h4>Quick Links</h4>
+              <ul class="footer-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="work.html">Work</a></li>
+                <li><a href="contact.html">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4>Services</h4>
+              <ul class="footer-links">
+                <li><a href="services.html">Home Repairs</a></li>
+                <li><a href="services.html">Drywall &amp; Painting</a></li>
+                <li><a href="services.html">Furniture Assembly</a></li>
+                <li><a href="services.html">Minor Plumbing</a></li>
+                <li><a href="services.html">Minor Electrical</a></li>
+                <li><a href="services.html">Property Maintenance</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4>Contact</h4>
+              <ul class="footer-links">
+                <li><a href="tel:+19292476158">+1 (929) 247-6158</a></li>
+                <li><a href="mailto:nolascoantonio057@gmail.com">nolascoantonio057@gmail.com</a></li>
+                <li>Mon-Sat, 8:00 AM - 6:00 PM</li>
+              </ul>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            &copy; <span id="year"></span> Nolasco Constructor LLC. All rights reserved.
+          </div>
         </div>
       </footer>
     </div>
