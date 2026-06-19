@@ -7,8 +7,6 @@ import './style.css';
   var nav = document.getElementById('main-nav');
   var navLinks = nav ? nav.querySelectorAll('a') : [];
   var yearSpan = document.getElementById('year');
-  var form = document.getElementById('estimate-form');
-  var successMsg = document.getElementById('form-success');
 
   /* Mobile menu toggle */
   function toggleMenu() {
@@ -37,12 +35,51 @@ import './style.css';
     yearSpan.textContent = new Date().getFullYear();
   }
 
-  /* Contact form */
-  if (form && successMsg) {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      successMsg.textContent = 'Thanks! Your request has been received. We\'ll contact you soon.';
-      form.reset();
-    });
+  /* Contact form handler */
+  var forms = [];
+  var form1 = document.getElementById('estimate-form');
+  var form2 = document.getElementById('contact-form');
+  if (form1) forms.push(form1);
+  if (form2) forms.push(form2);
+
+  for (var f = 0; f < forms.length; f++) {
+    (function (form) {
+      var successMsg = form.querySelector('.form-success');
+      var requiredInputs = form.querySelectorAll('[required]');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var valid = true;
+
+        for (var r = 0; r < requiredInputs.length; r++) {
+          var input = requiredInputs[r];
+          if (!input.value.trim()) {
+            input.classList.add('input-error');
+            valid = false;
+          } else {
+            input.classList.remove('input-error');
+          }
+        }
+
+        if (successMsg) {
+          if (valid) {
+            successMsg.textContent = 'Thanks! Your request has been received. We\'ll contact you soon.';
+            successMsg.className = 'form-success';
+            form.reset();
+          } else {
+            successMsg.textContent = 'Please fill in all required fields.';
+            successMsg.className = 'form-success error';
+          }
+        }
+      });
+
+      for (var r = 0; r < requiredInputs.length; r++) {
+        requiredInputs[r].addEventListener('input', function () {
+          if (this.value.trim()) {
+            this.classList.remove('input-error');
+          }
+        });
+      }
+    })(forms[f]);
   }
 })();
