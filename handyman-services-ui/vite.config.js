@@ -1,8 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
-// GitHub Pages project site — replace with the actual repository name.
-// For a custom domain, change to base: '/'
 const repoName = 'nolasco-constructor-llc';
 
 const pages = ['index', 'services', 'about', 'work', 'contact', '404'].reduce((acc, name) => {
@@ -11,7 +9,7 @@ const pages = ['index', 'services', 'about', 'work', 'contact', '404'].reduce((a
 }, {});
 
 export default defineConfig({
-  base: `/${repoName}/`,
+  base: process.env.VITE_BASE_PATH || '/',
   build: {
     rollupOptions: {
       input: pages,
