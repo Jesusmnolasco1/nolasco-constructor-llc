@@ -915,10 +915,15 @@ ul {
   color: var(--color-text);
 }
 
-.contact-detail-item div span {
+.contact-detail-item div span,
+.contact-link {
   display: block;
   font-size: 0.9375rem;
   color: var(--color-muted);
+}
+
+.contact-link:hover {
+  color: var(--color-primary-dark);
 }
 
 .contact-tips {
