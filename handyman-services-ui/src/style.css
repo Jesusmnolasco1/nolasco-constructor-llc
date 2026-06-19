@@ -9,11 +9,30 @@
   --color-border: #e5e7eb;
   --color-success: #10b981;
   --color-error: #ef4444;
+  --color-footer-bg: #0f172a;
+  --color-footer-border: #1f2937;
   --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
   --radius-lg: 16px;
   --radius-md: 10px;
   --container-width: 1200px;
+}
+
+[data-theme="dark"] {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-text: #f1f5f9;
+  --color-muted: #94a3b8;
+  --color-primary: #f59e0b;
+  --color-primary-dark: #d97706;
+  --color-dark: #1e293b;
+  --color-border: #334155;
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-footer-bg: #020617;
+  --color-footer-border: #1e293b;
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 *,
@@ -1027,6 +1046,14 @@ select.form-input {
   color: var(--color-error);
 }
 
+.form-note {
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-align: center;
+  line-height: 1.5;
+}
+
 /* Final CTA */
 .cta-section {
   background: var(--color-dark);
@@ -1073,9 +1100,18 @@ select.form-input {
   color: #fff;
 }
 
+[data-theme="dark"] .btn-outline {
+  border-color: #475569;
+}
+
+[data-theme="dark"] .btn-outline:hover {
+  background: #334155;
+  border-color: #94a3b8;
+}
+
 /* Footer */
 .footer {
-  background: #0f172a;
+  background: var(--color-footer-bg);
   color: #9ca3af;
   padding: 2.5rem 0 1.25rem;
 }
@@ -1112,7 +1148,7 @@ select.form-input {
 }
 
 .footer-bottom {
-  border-top: 1px solid #1f2937;
+  border-top: 1px solid var(--color-footer-border);
   padding-top: 1.5rem;
   font-size: 0.8125rem;
   text-align: center;
@@ -1260,4 +1296,38 @@ select.form-input {
   .services-detail-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--color-text);
+  padding: 0;
+  transition: border-color 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  border-color: var(--color-muted);
+}
+
+.theme-toggle {
+  margin-right: 0.5rem;
+}
+
+.theme-toggle svg {
+  display: block;
+}
+
+[data-theme="dark"] .theme-icon-light,
+[data-theme="light"] .theme-icon-dark {
+  display: none;
 }

@@ -1,7 +1,7 @@
 {
-  "name": "Nolasco Handyman Services",
-  "short_name": "Nolasco Handyman",
-  "description": "Quality repairs, installations, and maintenance for your home or business.",
+  "name": "Nolasco Constructor LLC",
+  "short_name": "Nolasco Constructor",
+  "description": "Handyman, repair, and maintenance services for homes, rentals, and small businesses.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

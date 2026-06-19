@@ -3,6 +3,37 @@ import './style.css';
 (function () {
   'use strict';
 
+  /* Theme toggle */
+  var themeToggle = document.getElementById('theme-toggle');
+  var html = document.documentElement;
+
+  function setTheme(theme) {
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    if (themeToggle) {
+      themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    }
+  }
+
+  function toggleTheme() {
+    var current = html.getAttribute('data-theme') || 'light';
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+    var currentTheme = html.getAttribute('data-theme') || 'light';
+    themeToggle.setAttribute('aria-label', currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+
+  var darkModeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+  function handleSystemChange(e) {
+    if (!localStorage.getItem('theme')) {
+      html.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+    }
+  }
+  darkModeMedia.addEventListener('change', handleSystemChange);
+
   var menuBtn = document.getElementById('menu-btn');
   var nav = document.getElementById('main-nav');
   var navLinks = nav ? nav.querySelectorAll('a') : [];
