@@ -74,36 +74,99 @@ import { FORM_CONFIG } from './config.js';
   }
 
   /* Contact form handler */
-  var forms = [];
-  var form1 = document.getElementById('estimate-form');
-  var form2 = document.getElementById('contact-form');
-  if (form1) forms.push(form1);
-  if (form2) forms.push(form2);
-
-  for (var f = 0; f < forms.length; f++) {
-    (function (form) {
-      var successMsg = form.querySelector('.form-success');
-      var requiredInputs = form.querySelectorAll('[required]');
+  var form = document.getElementById('contact-form');
+  if (form) {
+    (function () {
+      var mode = FORM_CONFIG.mode;
+      var endpoint = FORM_CONFIG.endpoint;
+      var successMsg = document.getElementById('form-success');
+      var noticeEl = document.getElementById('form-notice');
       var submitBtn = form.querySelector('.form-submit');
       var originalBtnText = submitBtn ? submitBtn.textContent : '';
 
+      var fields = {
+        name: { el: document.getElementById('form-name'), error: document.getElementById('error-name'), required: true },
+        phone: { el: document.getElementById('form-phone'), error: document.getElementById('error-phone'), required: true },
+        email: { el: document.getElementById('form-email'), error: document.getElementById('error-email'), required: true },
+        service: { el: document.getElementById('form-service'), error: document.getElementById('error-service'), required: true },
+        message: { el: document.getElementById('form-message'), error: document.getElementById('error-message'), required: true },
+        propertyType: { el: document.getElementById('form-property'), error: null, required: false },
+        preferredTiming: { el: document.getElementById('form-timing'), error: null, required: false },
+      };
+
+      function setModeNotice() {
+        if (!noticeEl) return;
+        if (mode === 'demo') {
+          noticeEl.textContent = 'Demo mode \u2014 form validates locally but no data is sent.';
+          noticeEl.className = 'form-notice notice-demo';
+        } else if (mode === 'external' && endpoint) {
+          noticeEl.textContent = 'Form is connected to an external endpoint.';
+          noticeEl.className = 'form-notice notice-external';
+        } else if (mode === 'external' && !endpoint) {
+          noticeEl.textContent = 'External mode is enabled but no endpoint is configured.';
+          noticeEl.className = 'form-notice notice-error';
+        } else {
+          noticeEl.textContent = '';
+          noticeEl.className = 'form-notice';
+        }
+      }
+      setModeNotice();
+
+      function validateField(field) {
+        if (!field || !field.el) return true;
+        var value = field.el.value.trim();
+        var errorMsg = '';
+
+        if (field.required && !value) {
+          errorMsg = 'This field is required.';
+        } else if (field.el.id === 'form-email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          errorMsg = 'Please enter a valid email address.';
+        }
+
+        if (field.error) {
+          field.error.textContent = errorMsg;
+        }
+        field.el.setAttribute('aria-invalid', errorMsg ? 'true' : 'false');
+        return !errorMsg;
+      }
+
+      function clearFieldError(field) {
+        if (!field) return;
+        if (field.error) field.error.textContent = '';
+        if (field.el) field.el.setAttribute('aria-invalid', 'false');
+      }
+
+      function clearAllFieldErrors() {
+        Object.keys(fields).forEach(function (key) {
+          clearFieldError(fields[key]);
+        });
+      }
+
+      Object.keys(fields).forEach(function (key) {
+        var field = fields[key];
+        if (!field.el) return;
+        field.el.addEventListener('input', function () {
+          validateField(field);
+          if (successMsg) {
+            successMsg.textContent = '';
+            successMsg.className = 'form-success';
+          }
+        });
+      });
+
       form.addEventListener('submit', function (e) {
         e.preventDefault();
-        var valid = true;
 
-        for (var r = 0; r < requiredInputs.length; r++) {
-          var input = requiredInputs[r];
-          if (!input.value.trim()) {
-            input.classList.add('input-error');
+        var valid = true;
+        Object.keys(fields).forEach(function (key) {
+          if (!validateField(fields[key])) {
             valid = false;
-          } else {
-            input.classList.remove('input-error');
           }
-        }
+        });
 
         if (!valid) {
           if (successMsg) {
-            successMsg.textContent = 'Please fill in all required fields.';
+            successMsg.textContent = 'Please correct the highlighted fields.';
             successMsg.className = 'form-success error';
           }
           return;
@@ -114,30 +177,39 @@ import { FORM_CONFIG } from './config.js';
           successMsg.className = 'form-success';
         }
 
-        if (FORM_CONFIG.mode === 'demo') {
+        if (mode === 'demo') {
           if (successMsg) {
-            successMsg.textContent = 'Thanks! Your request has been received. We\'ll contact you soon.';
+            successMsg.textContent = 'Thanks! This demo request was validated successfully. Connect a secure form endpoint before launch to receive real messages.';
             successMsg.className = 'form-success';
           }
           form.reset();
+          clearAllFieldErrors();
           return;
         }
 
-        /* Live mode — send to external endpoint */
+        if (mode === 'external' && !endpoint) {
+          if (successMsg) {
+            successMsg.textContent = 'The contact form is not connected yet. Please add a valid form endpoint before launch.';
+            successMsg.className = 'form-success error';
+          }
+          return;
+        }
+
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.textContent = 'Sending...';
         }
 
-        var formData = new FormData(form);
         var payload = {};
-        formData.forEach(function (value, key) {
-          payload[key] = value;
+        Object.keys(fields).forEach(function (key) {
+          if (fields[key].el) {
+            payload[key] = fields[key].el.value.trim();
+          }
         });
 
-        fetch(FORM_CONFIG.endpoint, {
+        fetch(endpoint, {
           method: 'POST',
-          headers: FORM_CONFIG.headers,
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         })
           .then(function (response) {
@@ -150,10 +222,11 @@ import { FORM_CONFIG } from './config.js';
               successMsg.className = 'form-success';
             }
             form.reset();
+            clearAllFieldErrors();
           })
           .catch(function () {
             if (successMsg) {
-              successMsg.textContent = 'Something went wrong. Please try again or call us directly.';
+              successMsg.textContent = 'Something went wrong. Please try again or contact us directly.';
               successMsg.className = 'form-success error';
             }
           })
@@ -164,17 +237,6 @@ import { FORM_CONFIG } from './config.js';
             }
           });
       });
-
-      for (var r = 0; r < requiredInputs.length; r++) {
-        requiredInputs[r].addEventListener('input', function () {
-          if (this.value.trim()) {
-            this.classList.remove('input-error');
-          }
-          if (successMsg && successMsg.textContent) {
-            successMsg.textContent = '';
-          }
-        });
-      }
-    })(forms[f]);
+    })();
   }
 })();
