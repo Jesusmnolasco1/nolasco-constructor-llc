@@ -1,18 +1,18 @@
+import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
-import { resolve } from 'path';
-
-const repoName = 'nolasco-constructor-llc';
-
-const pages = ['index', 'services', 'about', 'work', 'contact', '404'].reduce((acc, name) => {
-  acc[name] = resolve(__dirname, `${name}.html`);
-  return acc;
-}, {});
 
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || '/',
   build: {
     rollupOptions: {
-      input: pages,
+      input: {
+        main: resolve(import.meta.dirname, 'index.html'),
+        services: resolve(import.meta.dirname, 'services.html'),
+        about: resolve(import.meta.dirname, 'about.html'),
+        work: resolve(import.meta.dirname, 'work.html'),
+        contact: resolve(import.meta.dirname, 'contact.html'),
+        notFound: resolve(import.meta.dirname, '404.html'),
+      },
     },
   },
 });
