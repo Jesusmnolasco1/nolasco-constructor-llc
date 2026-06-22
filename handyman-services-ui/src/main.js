@@ -198,11 +198,17 @@ import { FORM_CONFIG } from './config.js';
           body: JSON.stringify(payload),
         })
           .then(function (response) {
-            return response.json().then(function (data) {
-              if (!response.ok) {
-                throw data;
+            return response.text().then(function (text) {
+              var result;
+              try {
+                result = text ? JSON.parse(text) : {};
+              } catch (e) {
+                result = { ok: false, message: 'Something went wrong. Please try again or contact us directly.' };
               }
-              return data;
+              if (!response.ok) {
+                throw result;
+              }
+              return result;
             });
           })
           .then(function () {
