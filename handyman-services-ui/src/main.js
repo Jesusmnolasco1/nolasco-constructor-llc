@@ -78,7 +78,6 @@ import { FORM_CONFIG } from './config.js';
   if (form) {
     (function () {
       var mode = FORM_CONFIG.mode;
-      var endpoint = FORM_CONFIG.endpoint;
       var successMsg = document.getElementById('form-success');
       var noticeEl = document.getElementById('form-notice');
       var submitBtn = form.querySelector('.form-submit');
@@ -97,14 +96,8 @@ import { FORM_CONFIG } from './config.js';
       function setModeNotice() {
         if (!noticeEl) return;
         if (mode === 'demo') {
-          noticeEl.textContent = 'Demo mode \u2014 form validates locally but no data is sent.';
+          noticeEl.textContent = 'This form is currently running in demo mode.';
           noticeEl.className = 'form-notice notice-demo';
-        } else if (mode === 'external' && endpoint) {
-          noticeEl.textContent = 'Form is connected to an external endpoint.';
-          noticeEl.className = 'form-notice notice-external';
-        } else if (mode === 'external' && !endpoint) {
-          noticeEl.textContent = 'External mode is enabled but no endpoint is configured.';
-          noticeEl.className = 'form-notice notice-error';
         } else {
           noticeEl.textContent = '';
           noticeEl.className = 'form-notice';
@@ -187,14 +180,6 @@ import { FORM_CONFIG } from './config.js';
           return;
         }
 
-        if (mode === 'external' && !endpoint) {
-          if (successMsg) {
-            successMsg.textContent = 'The contact form is not connected yet. Please add a valid form endpoint before launch.';
-            successMsg.className = 'form-success error';
-          }
-          return;
-        }
-
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.textContent = 'Sending...';
@@ -207,26 +192,44 @@ import { FORM_CONFIG } from './config.js';
           }
         });
 
-        fetch(endpoint, {
+        fetch('/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         })
           .then(function (response) {
-            if (!response.ok) throw new Error('Server error');
-            return response.json();
+            return response.json().then(function (data) {
+              if (!response.ok) {
+                throw data;
+              }
+              return data;
+            });
           })
           .then(function () {
             if (successMsg) {
-              successMsg.textContent = 'Thanks! Your request has been sent. We\'ll contact you soon.';
+              successMsg.textContent = "Thanks! Your request has been received. We'll contact you soon.";
               successMsg.className = 'form-success';
             }
             form.reset();
             clearAllFieldErrors();
           })
-          .catch(function () {
+          .catch(function (err) {
+            if (err && err.errors) {
+              Object.keys(err.errors).forEach(function (key) {
+                var field = fields[key];
+                if (field) {
+                  if (field.error) {
+                    field.error.textContent = err.errors[key];
+                  }
+                  if (field.el) {
+                    field.el.setAttribute('aria-invalid', 'true');
+                  }
+                }
+              });
+            }
             if (successMsg) {
-              successMsg.textContent = 'Something went wrong. Please try again or contact us directly.';
+              var msg = (err && err.message) || 'Something went wrong. Please try again or contact us directly.';
+              successMsg.textContent = msg;
               successMsg.className = 'form-success error';
             }
           })

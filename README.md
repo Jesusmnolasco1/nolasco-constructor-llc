@@ -89,20 +89,89 @@ https://jesusmnolasco1.github.io/nolasco-constructor-llc/
 | Variable | Build-time | Purpose |
 |---|---|---|
 | `VITE_BASE_PATH` | Yes | Controls Vite `base` path. Defaults to `/`. Set to `/nolasco-constructor-llc/` for GitHub Pages. |
-| `VITE_CONTACT_FORM_MODE` | Yes | `demo` or `external`. Controls contact form behavior. |
-| `VITE_CONTACT_FORM_ENDPOINT` | Yes | URL for external form submission endpoint. |
+| `VITE_CONTACT_FORM_MODE` | Yes | `internal` or `demo`. Controls contact form behavior. |
 
 Only `VITE_CONTACT_FORM_*` variables are exposed to the browser. `VITE_BASE_PATH` is build-time only.
 
-## Contact Form Configuration
+## Contact Form with Supabase (Production)
 
-See `.env.example` for details. Copy it to `.env.local` to configure:
+The contact form submits to a Vercel Serverless Function at `/api/contact`, which inserts submissions into a Supabase database.
 
+### Supabase Table Setup
+
+Run the migration in `handyman-services-ui/supabase/contact_submissions.sql` in your Supabase SQL editor:
+
+```sql
+create table if not exists public.contact_submissions (
+  id uuid primary key default gen_random_uuid(),
+  full_name text not null,
+  phone text not null,
+  email text not null,
+  service_needed text not null,
+  property_type text,
+  preferred_timing text,
+  message text not null,
+  source text default 'website',
+  status text default 'new',
+  created_at timestamptz not null default now()
+);
+
+alter table public.contact_submissions enable row level security;
 ```
-cp .env.example .env.local
+
+**Do not create public insert policies.** Inserts happen from the serverless function using the service role key, which bypasses RLS.
+
+### Vercel Environment Variables
+
+Configure these in **Vercel Project Settings → Environment Variables** (do not add them to `.env` or `.env.local`):
+
+| Variable | Secret | Purpose |
+|---|---|---|
+| `SUPABASE_URL` | No | Your Supabase project URL (e.g. `https://xxxxx.supabase.co`) |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Yes** | Supabase service_role key — must stay server-side only |
+| `VITE_CONTACT_FORM_MODE` | No | Set to `internal` for production |
+
+**Security notes:**
+- `SUPABASE_SERVICE_ROLE_KEY` must **never** be exposed in frontend code.
+- Do **not** prefix server-side secrets with `VITE_`.
+- The service role key bypasses Row Level Security — it must stay server-side only.
+
+### How It Works
+
+1. Visitor fills out `/contact.html` and clicks submit.
+2. Frontend validates required fields, then POSTs JSON to `/api/contact`.
+3. The Vercel Function (`api/contact.js`) validates again, creates a Supabase client with the service role key, and inserts a row into `contact_submissions`.
+4. The function returns a JSON success or error response.
+5. The frontend shows the success message or field-level validation errors.
+
+### Testing After Deployment
+
+1. Deploy to Vercel with the environment variables above.
+2. Open the live site's `/contact.html` page.
+3. Fill out and submit the form.
+4. Confirm the green success message appears.
+5. Open your Supabase dashboard → Table Editor → `contact_submissions`.
+6. Confirm the new row appears with all submitted data.
+
+To test the API directly:
+
+```bash
+curl -X POST https://your-project.vercel.app/api/contact \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test","phone":"555-0000","email":"test@example.com","service":"repairs","message":"Testing the API."}'
 ```
 
-Keep demo mode during development. Set `VITE_CONTACT_FORM_MODE=external` and `VITE_CONTACT_FORM_ENDPOINT` to a real endpoint for production.
+### Local Development
+
+During development, set `VITE_CONTACT_FORM_MODE=demo` in `.env.local` to validate without sending data.
+
+The Vercel Function does **not** run with `vite dev` (plain Vite does not serve `/api/*`). To test the full flow locally, use the [Vercel CLI](https://vercel.com/docs/cli):
+
+```bash
+npx vercel dev
+```
+
+This simulates the production environment including serverless functions.
 
 ## Launch Checklist
 
@@ -112,10 +181,10 @@ Keep demo mode during development. Set `VITE_CONTACT_FORM_MODE=external` and `VI
 - [ ] Test Call Now button: tel:+19292476158
 - [ ] Test email link: mailto:nolascoantonio057@gmail.com
 - [ ] Test demo contact form
-- [ ] Connect real contact form endpoint (`VITE_CONTACT_FORM_MODE=external`)
-- [ ] Replace placeholder service areas with real coverage info
-- [ ] Add real project photos if available
-- [ ] Replace Vercel URL with custom domain if one is added later
+- [ ] Configure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel
+- [ ] Deploy and test contact form submission
+- [ ] Confirm row appears in Supabase contact_submissions table
+- [ ] Confirm no service role key exposed in browser code
 
 ## Contact
 
